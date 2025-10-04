@@ -1,0 +1,27 @@
+name: Build Android APK
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # Билдваме вътре в официалния контейнер на Buildozer → няма локални инсталации
+    container:
+      image: kivy/buildozer:latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate project from bootstrap.py
+        run: |
+          python3 bootstrap.py
+
+      - name: Build APK (debug)
+        run: |
+          buildozer android debug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: veresia-apk
+          path: bin/*.apk
